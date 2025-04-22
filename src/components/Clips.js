@@ -1,52 +1,55 @@
 // src/components/Clips.js
-import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
-// On lit l'URL de l'API depuis la variable d'env ou on tombe sur localhost
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000'
+// Charge l'URL de l'API depuis la variable d'environnement
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+
+// Optionnel : définir un baseURL pour axios
+axios.defaults.baseURL = API_URL;
 
 export default function Clips() {
-  const [clips, setClips] = useState([])
+  const [clips, setClips] = useState([]);
 
   // Chargement initial
   useEffect(() => {
-    fetchClips()
-  }, [])
+    fetchClips();
+  }, []);
 
   // GET /api/clips
   const fetchClips = () => {
     axios
-      .get(`${API_URL}/api/clips`)
+      .get('/api/clips')
       .then(({ data }) => setClips(data))
-      .catch(err => console.error('Erreur récupération clips :', err))
-  }
+      .catch(err => console.error('Erreur récupération clips :', err));
+  };
 
   // DELETE /api/clips/:id
   const handleDelete = id => {
-    if (!window.confirm("Voulez‑vous vraiment supprimer ce clip ?")) return
+    if (!window.confirm("Voulez‑vous vraiment supprimer ce clip ?")) return;
 
     axios
-      .delete(`${API_URL}/api/clips/${id}`)
+      .delete(`/api/clips/${id}`)
       .then(() => {
-        setClips(cs => cs.filter(c => c.id !== id))
+        setClips(cs => cs.filter(c => c.id !== id));
       })
-      .catch(err => console.error('Erreur suppression clip :', err))
-  }
+      .catch(err => console.error('Erreur suppression clip :', err));
+  };
 
   // PUT /api/clips/:id
   const handleRename = id => {
-    const newCat = window.prompt("Nouvelle catégorie :")
-    if (!newCat) return
+    const newCat = window.prompt("Nouvelle catégorie :");
+    if (!newCat) return;
 
     axios
-      .put(`${API_URL}/api/clips/${id}`, { category: newCat })
+      .put(`/api/clips/${id}`, { category: newCat })
       .then(({ data }) => {
         setClips(cs =>
           cs.map(c => (c.id === id ? { ...c, category: data.clip.category } : c))
-        )
+        );
       })
-      .catch(err => console.error('Erreur renommage clip :', err))
-  }
+      .catch(err => console.error('Erreur renommage clip :', err));
+  };
 
   return (
     <div>
@@ -91,5 +94,5 @@ export default function Clips() {
         )}
       </div>
     </div>
-  )
+  );
 }
